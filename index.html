@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Title</title>
+    <title>Campeonato Brasileiro 2020</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -103,7 +103,7 @@
           this.pontos = 0
           this.gp = 0
           this.gc = 0
-          this.saldo = this.gp - this.gc
+          this.saldo = 0
 
         }
 
@@ -137,9 +137,10 @@
         }
 
         atualizaInfo(pontos, golsMarcados, golsSofridos){
-          this.pontos += pontos;
-          this.gp += golsMarcados;
-          this.gc += golsSofridos;
+          this.pontos += pontos
+          this.gp += golsMarcados
+          this.gc += golsSofridos
+          this.saldo = this.gp - this.gc
         }
 
         empate(golsMarcados, golsSofridos){
