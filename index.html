@@ -54,6 +54,11 @@
           </div>
         </div>
         <div class="row mb-2" v-else>
+          <div class="row my-2">
+            <div class="col-12">
+              <input type="text" name="" id="" class="form-control" v-model="busca">
+            </div>
+          </div>
           <table class="table table-striped">
             <thead>
               <th>Time</th>
@@ -62,7 +67,7 @@
               </th>
             </thead>
             <tbody>
-              <tr v-for="time in ordenarTabela">
+              <tr v-for="time in timesFiltrados">
                 <td>
                   <img :src="time.escudo" :alt="time.nome" style="width: 35px; margin: 0 25px;">
                   {{ time.nome }}
@@ -159,6 +164,7 @@
       new Vue({
           el: '#app',
           data: {
+              busca: '',
               ordem: {
                 colunas: ['pontos', 'gp', 'gc', 'saldo'],
                 orientacao: ['desc', 'desc', 'asc', 'desc']
@@ -205,9 +211,14 @@
             timesRebaixados(){
               return this.times.slice(16, 20)
             },
-            ordenarTabela(){
-              return _.orderBy(this.times, this.ordem.colunas, this.ordem.orientacao)
-            }
+            timesFiltrados(){
+              let times = _.orderBy(this.times, this.ordem.colunas, this.ordem.orientacao)
+              let self = this
+              return _.filter(times, function(time){
+                let busca = self.busca
+                return time.nome.indexOf(busca) >= 0
+              })
+            },
           },
           methods: {
             criarNovoJogo(){
