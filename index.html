@@ -11,9 +11,7 @@
   </head>
   <body>
     <div class="container" id="app">
-        <div class="row">
-            <h1>Campeonato Brasileiro 2020</h1>
-        </div>
+        <titulo></titulo>
         <div class="row">
           <div class="col-md-12 my-3">
             <button class="btn btn-primary" @click="criarNovoJogo">Novo Jogo</button>
@@ -63,14 +61,13 @@
             <thead>
               <th>Time</th>
               <th style="width: 10%;" v-for="(coluna, indice) in ordem.colunas">
-                <a href="#" @click.prevent="ordenar(indice)">{{ coluna }}</a>
+                <a href="#" @click.prevent="ordenar(indice)">{{ coluna | ucwords }}</a>
               </th>
             </thead>
             <tbody>
               <tr v-for="time in timesFiltrados">
                 <td>
-                  <img :src="time.escudo" :alt="time.nome" style="width: 35px; margin: 0 25px;">
-                  {{ time.nome }}
+                  <clube :time="time"></clube>
                 </td>
                 <td>{{ time.pontos }}</td>
                 <td>{{ time.gp }}</td>
@@ -79,181 +76,42 @@
               </tr>
             </tbody>
           </table>
-
-          <h3>Zona da Liberta</h3>
-          <ul>
-            <liv v-for="time in timesLibertadores">
-              <img :src="time.escudo" :alt="time.nome" style="width: 35px; margin: 0 25px;">
-                  {{ time.nome }}
-            </li>
-          </ul>
-
-          <h3>Zona da Degola</h3>
-          <ul>
-            <liv v-for="time in timesRebaixados">
-              <img :src="time.escudo" :alt="time.nome" style="width: 35px; margin: 0 25px;">
-                  {{ time.nome }}
-            </li>
-          </ul>
         </div>
+        <div class="row">
+          <div class="col-6 my-3">
+            <div class="card">
+              <div class="card-title">
+                <h3>Zona da Liberta</h3>
+              </div>  
+              <div class="card-body">
+                <ul class="list-group">
+                  <li class="list-group-item" v-for="time in timesLibertadores">
+                    <clube :time="time"></clube>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 my-3">
+            <div class="card">
+              <div class="card-title">
+                <h3>Zona da Degola</h3>
+              </div>
+              <div class="card-body">
+                <ul class="list-group">
+                  <li class="list-group-item" v-for="time in timesRebaixados">
+                    <clube :time="time"></clube>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"></script>
-    <script>
-
-      class Time {
-        constructor(nome, escudo){
-          this.nome = nome
-          this.escudo = escudo
-          this.pontos = 0
-          this.gp = 0
-          this.gc = 0
-          this.saldo = 0
-
-        }
-
-        fimJogo(timeVisitante, golsMarcados, golsSofridos){
-          if(this.foiEmpate(golsMarcados, golsSofridos)){
-            this.empate(golsMarcados, golsSofridos);
-            timeVisitante.empate(golsMarcados, golsSofridos);
-
-            return;
-          }
-
-          if(this.foiVitoria(golsMarcados, golsSofridos)){
-            this.vitoria(golsMarcados, golsSofridos);
-            timeVisitante.derrota(golsSofridos, golsMarcados);
-            return;
-
-          }else{
-            this.derrota(golsMarcados, golsSofridos);
-            timeVisitante.vitoria(golsSofridos, golsMarcados);
-            return;
-
-          }
-        }
-
-        foiEmpate(golsMarcados, golsSofridos){
-          return golsMarcados === golsSofridos;
-        }
-
-        foiVitoria(golsMarcados, golsSofridos){
-          return golsMarcados > golsSofridos;
-        }
-
-        atualizaInfo(pontos, golsMarcados, golsSofridos){
-          this.pontos += pontos
-          this.gp += golsMarcados
-          this.gc += golsSofridos
-          this.saldo = this.gp - this.gc
-        }
-
-        empate(golsMarcados, golsSofridos){
-          this.atualizaInfo(1, golsMarcados, golsSofridos);
-        }
-
-        vitoria(golsMarcados, golsSofridos){
-          this.atualizaInfo(3, golsMarcados, golsSofridos);
-        }
-
-        derrota(golsMarcados, golsSofridos){
-          this.atualizaInfo(0, golsMarcados, golsSofridos);
-        }
-      }
-      
-      new Vue({
-          el: '#app',
-          data: {
-              busca: '',
-              ordem: {
-                colunas: ['pontos', 'gp', 'gc', 'saldo'],
-                orientacao: ['desc', 'desc', 'asc', 'desc']
-              },
-              times: [
-                new Time('Athletico PR', 'assets/athletico_pr_60x60.png'),
-                new Time('Atletico GO', 'assets/atletico_go_60x60.png'),
-                new Time('Atletico MG', 'assets/atletico_mg_60x60.png'),
-                new Time('Bahia', 'assets/bahia_60x60.png'),
-                new Time('Botafogo', 'assets/botafogo_60x60.png'),
-                new Time('Bragantino', 'assets/bragantino_sp_60x60.png'),
-                new Time('Ceara', 'assets/ceara_60x60.png'),
-                new Time('Corinthians', 'assets/corinthians_60x60.png'),
-                new Time('Coritiba', 'assets/coritiba_60x60.png'),
-                new Time('Flamengo', 'assets/flamengo_60x60.png'),
-                new Time('Fluminense', 'assets/fluminense_60x60.png'),
-                new Time('Fortaleza', 'assets/fortaleza_60x60.png'),
-                new Time('Goias', 'assets/goias_60x60.png'),
-                new Time('Gremio', 'assets/gremio_60x60.png'),
-                new Time('Internacional', 'assets/internacional_60x60.png'),
-                new Time('Palmeiras', 'assets/palmeiras_60x60.png'),
-                new Time('Santos', 'assets/santos_60x60.png'),
-                new Time('São Paulo', 'assets/sao_paulo_60x60.png'),
-                new Time('Sport', 'assets/sport_60x60.png'),
-                new Time('Vasco', 'assets/vasco_60x60.png'),
-                
-              ],
-              novoJogo: {
-                casa: {
-                  time: null,
-                  gols: 0
-                },
-                visitante: {
-                  time: null,
-                  gols: 0
-                }
-              },
-              visao: 'tabela'
-          },
-          computed: {
-            timesLibertadores(){
-              return this.times.slice(0, 6)
-            },
-            timesRebaixados(){
-              return this.times.slice(16, 20)
-            },
-            timesFiltrados(){
-              let times = _.orderBy(this.times, this.ordem.colunas, this.ordem.orientacao)
-              let self = this
-              return _.filter(times, function(time){
-                let busca = self.busca
-                return time.nome.indexOf(busca) >= 0
-              })
-            },
-          },
-          methods: {
-            criarNovoJogo(){
-              let indiceCasa = Math.floor(Math.random() * 20)
-              let indiceFora = Math.floor(Math.random() * 20)
-
-              this.novoJogo.casa.time = this.times[indiceCasa]
-              this.novoJogo.casa.gols = 0
-              this.novoJogo.visitante.time = this.times[indiceFora]
-              this.novoJogo.visitante.gols = 0
-
-              this.visao = 'placar'
-            },
-
-            fimJogo(){
-              let golsMarcados = parseInt(this.novoJogo.casa.gols)
-              let golsSofridos = parseInt(this.novoJogo.visitante.gols)
-              let timeAdversario = this.novoJogo.visitante.time
-              let timeCasa = this.novoJogo.casa.time
-
-              timeCasa.fimJogo(timeAdversario, golsMarcados, golsSofridos)
-
-              this.visao = 'tabela'
-            },
-            ordenar(indice){
-              //this.ordem.orientacao[indice] = this.ordem.orientacao[indice] == 'desc' ? 'asc' : 'desc'
-              this.$set(this.ordem.orientacao, indice, this.ordem.orientacao[indice] == 'desc' ? 'asc' : 'desc')
-            }
-          },
-          filters: {
-            saldo(time){
-              return time.gp - time.gc
-            }
-          }
-      })
-    </script>
+    <script src="./time.js"></script>
+    <script src="./script.js"></script>
   </body>
 </html>
