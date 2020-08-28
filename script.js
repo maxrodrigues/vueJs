@@ -11,13 +11,51 @@ Vue.component('titulo', {
 })
 
 Vue.component('clube', {
-  props: ['time'],
+  props: ['time', 'inverter'],
   template: `
-  <div>
-    <img :src="time.escudo" :alt="time.nome" style="width: 35px; margin: 0 25px;">
-    {{ time.nome | ucwords }}
+  <div style="display: flex; flex-direction: row;">
+    <img :src="time.escudo" :alt="time.nome" :style="{order: inverter === 'true' ? 1 : 0}">
+    <span :style="{order: inverter === 'true' ? 0 : 1}">{{ time.nome | ucwords }}</span>
   </div>
   `
+})
+
+Vue.component('clubes-libertadores', {
+  props: ['times'],
+  template: `
+    <div>
+      <h3></h3>
+      <ul>
+        <li v-for="time in timesLibertadores">
+          <clube :time="time"></clube>
+        </li>
+      </ul>
+    </div>
+  `,
+  computed: {
+    timesLibertadores(){
+      return this.times.slice(0, 6)
+    }
+  }
+})
+
+Vue.component('clubes-rebaixados', {
+  props: ['times'],
+  template: `
+    <div>
+      <h3></h3>
+      <ul>
+        <li v-for="time in timesRebaixados">
+          <clube :time="time"></clube>
+        </li>
+      </ul>
+    </div>
+  `,
+  computed: {
+    timesRebaixados(){
+      return this.times.slice(16, 20)
+    }
+  }
 })
 
 new Vue({
@@ -64,20 +102,17 @@ new Vue({
         visao: 'tabela'
     },
     computed: {
-      timesLibertadores(){
-        return this.times.slice(0, 6)
-      },
-      timesRebaixados(){
-        return this.times.slice(16, 20)
-      },
       timesFiltrados(){
-        let times = _.orderBy(this.times, this.ordem.colunas, this.ordem.orientacao)
+        //let times = 
         let self = this
-        return _.filter(times, function(time){
+        return _.filter(this.timesOrdenados, function(time){
           let busca = self.busca
           return time.nome.indexOf(busca) >= 0
         })
       },
+      timesOrdenados(){
+        return _.orderBy(this.times, this.ordem.colunas, this.ordem.orientacao)
+      }
     },
     methods: {
       criarNovoJogo(){
